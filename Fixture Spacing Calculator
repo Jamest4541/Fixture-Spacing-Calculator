@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixture Spacing Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        #spacingResult {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #watermark {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: #999;
+            font-size: 12px;
+            transform: rotate(45deg);
+            opacity: 0.5;
+        }
+
+        #donateButton {
+            background-color: #f44336;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Fixture Spacing Calculator</h1>
+
+    <form id="spacingForm">
+        <label for="roomLength">Room/Truss Length:</label>
+        <input type="number" id="roomLength" required>
+        <select id="roomLengthUnit">
+            <option value="meters">meters</option>
+            <option value="centimeters">centimeters</option>
+            <option value="feet">feet</option>
+            <option value="inches">inches</option>
+        </select>
+
+        <label for="fixtureLength">Fixture Length:</label>
+        <input type="number" id="fixtureLength" required>
+        <select id="fixtureLengthUnit">
+            <option value="meters">meters</option>
+            <option value="centimeters">centimeters</option>
+            <option value="feet">feet</option>
+            <option value="inches">inches</option>
+        </select>
+
+        <label for="numberOfFixtures">Number of Fixtures:</label>
+        <input type="number" id="numberOfFixtures" required>
+
+        <label for="spacingOffEnds">Spacing Off Ends:</label>
+        <input type="number" id="spacingOffEnds" required>
+        <select id="spacingOffEndsUnit">
+            <option value="meters">meters</option>
+            <option value="centimeters">centimeters</option>
+            <option value="feet">feet</option>
+            <option value="inches">inches</option>
+        </select>
+
+        <!-- New option for center-to-center spacing -->
+        <label for="centerToCenter">Calculate Center-to-Center Spacing:</label>
+        <input type="checkbox" id="centerToCenter">
+
+        <!-- Updated Calculate Spacing button -->
+        <button type="button" onclick="calculateSpacing()">Calculate Spacing</button>
+    </form>
+
+    <p id="spacingResult"></p>
+
+    <div id="watermark">Property of JTB</div>
+
+    <!-- Updated Donate button with PayPal link -->
+    <button id="donateButton" onclick="openDonationPage()">Donate</button>
+
+    <script>
+        function calculateSpacing() {
+            const roomLength = convertToMeters('roomLength', 'roomLengthUnit');
+            const fixtureLength = convertToMeters('fixtureLength', 'fixtureLengthUnit');
+            const numberOfFixtures = parseInt(document.getElementById('numberOfFixtures').value);
+            const spacingOffEnds = convertToMeters('spacingOffEnds', 'spacingOffEndsUnit');
+            const centerToCenter = document.getElementById('centerToCenter').checked;
+
+            let totalSpacingArea = roomLength - (2 * spacingOffEnds);
+
+            if (centerToCenter) {
+                // Calculate the total spacing area for center-to-center spacing
+                totalSpacingArea += (numberOfFixtures - 1) * fixtureLength;
+            }
+
+            const spacing = totalSpacingArea / (numberOfFixtures - 1);
+
+            const resultElement = document.getElementById('spacingResult');
+            if (spacing >= 0) {
+                if (centerToCenter) {
+                    resultElement.textContent = `To achieve equal center-to-center spacing, place ${numberOfFixtures} fixtures with a spacing of ${spacing.toFixed(2)} meters.`;
+                } else {
+                    resultElement.textContent = `To achieve equal spacing, place ${numberOfFixtures} fixtures with a spacing of ${spacing.toFixed(2)} meters.`;
+                }
+            } else {
+                resultElement.textContent = "The specified number of fixtures won't fit in the room with the given spacing off the ends. Please adjust the parameters.";
+            }
+        }
+
+        function convertToMeters(valueId, unitId) {
+            const value = parseFloat(document.getElementById(valueId).value);
+            const unit = document.getElementById(unitId).value;
+
+            switch (unit) {
+                case 'centimeters':
+                    return value / 100;
+                case 'feet':
+                    return value / 3.281;
+                case 'inches':
+                    return value / 39.37;
+                default:
+                    return value;
+            }
+        }
+
+        function openDonationPage() {
+            window.open('https://www.paypal.com/donate/?hosted_button_id=KU56UXJ6D6V9E', '_blank');
+        }
+    </script>
+
+</body>
+</html>
